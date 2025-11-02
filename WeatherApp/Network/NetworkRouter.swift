@@ -10,6 +10,7 @@ import Foundation
 protocol NetworkRouterProtocol {
     func searchCitys(query: String, completion: @escaping (Result<WeatherResponse, NetworkError>) -> Void)
     func fetchForecast(city: String, completion: @escaping (Result<ForecastResponse, NetworkError>) -> Void)
+    func fetchWeatherByLocation(lat: Double, lon: Double, completion: @escaping (Result<WeatherResponse, NetworkError>) -> Void)
 }
 
 final class NetworkRouter: NetworkRouterProtocol {
@@ -42,4 +43,14 @@ final class NetworkRouter: NetworkRouterProtocol {
         )
     }
     
+    func fetchWeatherByLocation(lat: Double, lon: Double, completion: @escaping (Result<WeatherResponse, NetworkError>) -> Void) {
+        let endpoint = WeatherEndpoint.currentWeatherByCoord(lat: lat, lon: lon)
+        
+        service.request(
+            endpoint: endpoint,
+            responseType: WeatherResponse.self,
+            method: .get,
+            completion: completion
+        )
+    }
 }

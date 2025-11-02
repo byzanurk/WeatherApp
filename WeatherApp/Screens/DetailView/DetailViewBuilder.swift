@@ -20,4 +20,19 @@ struct DetailViewBuilder {
         
         return detailVC
     }
+    
+    static func buildWithCoord(coordinator: CoordinatorProtocol, lat: Double, lon: Double) -> UIViewController {
+        let service: NetworkRouterProtocol = NetworkRouter()
+        let viewModel = DetailViewModel(service: service, weather: nil)
+        let storyboard = UIStoryboard(name: "DetailView", bundle: nil)
+        guard let detailVC = storyboard.instantiateViewController(withIdentifier: "DetailView") as? DetailViewController else { return UIViewController() }
+
+        viewModel.latitude = lat
+        viewModel.longitude = lon
+        
+        detailVC.viewModel = viewModel
+        detailVC.coordinator = coordinator
+        
+        return detailVC
+    }
 }

@@ -50,6 +50,14 @@
                                     <constraint firstAttribute="trailing" secondItem="X1K-4c-ee8" secondAttribute="trailing" constant="16" id="tvK-T6-fWC"/>
                                 </constraints>
                             </view>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hy2-Ae-8ft">
+                                <rect key="frame" x="233" y="81" width="144" height="35"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain" title="My Location 📍"/>
+                                <connections>
+                                    <action selector="myLocButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="U4C-22-dTX"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -62,8 +70,10 @@
                             <constraint firstItem="R67-Sw-TdS" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="IlD-CB-ARa"/>
                             <constraint firstAttribute="bottom" secondItem="R67-Sw-TdS" secondAttribute="bottom" id="IlD-ea-vOs"/>
                             <constraint firstItem="75m-br-R0q" firstAttribute="top" secondItem="Z1R-Ck-TSQ" secondAttribute="bottom" id="J5O-4D-BCF"/>
+                            <constraint firstItem="Z1R-Ck-TSQ" firstAttribute="top" secondItem="hy2-Ae-8ft" secondAttribute="bottom" constant="2" id="aF8-Bb-elo"/>
                             <constraint firstItem="Z1R-Ck-TSQ" firstAttribute="top" secondItem="d2M-nq-dgx" secondAttribute="bottom" constant="4" id="jP8-5j-U1U"/>
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="75m-br-R0q" secondAttribute="trailing" id="mwW-h3-Ae0"/>
+                            <constraint firstAttribute="trailing" secondItem="hy2-Ae-8ft" secondAttribute="trailing" constant="16" id="poA-8S-itH"/>
                             <constraint firstItem="Z1R-Ck-TSQ" firstAttribute="trailing" secondItem="6Tk-OE-BBY" secondAttribute="trailing" id="qBi-oL-F5P"/>
                             <constraint firstItem="75m-br-R0q" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="slt-JK-3ZF"/>
                             <constraint firstItem="d2M-nq-dgx" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" constant="16" id="xgC-LU-DvR"/>

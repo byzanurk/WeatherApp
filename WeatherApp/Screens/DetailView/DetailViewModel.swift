@@ -9,9 +9,12 @@ import Foundation
 
 protocol DetailViewModelProtocol {
     var delegate: DetailViewModelOutput? { get set }
-    var weather: WeatherResponse { get }
+    var weather: WeatherResponse? { get }
+    var latitude: Double? { get }
+    var longitude: Double? { get }
     var forecasts: [ForecastItem] { get set }
     func fetchForecast()
+    func fetchWeatherByLocation()
 }
 
 protocol DetailViewModelOutput: AnyObject {
@@ -23,16 +26,18 @@ final class DetailViewModel: DetailViewModelProtocol {
     
     var delegate: DetailViewModelOutput?
     private let service: NetworkRouterProtocol
-    let weather: WeatherResponse
+    var weather: WeatherResponse?
+    var latitude: Double?
+    var longitude: Double?
     var forecasts: [ForecastItem] = []
     
-    init(service: NetworkRouterProtocol, weather: WeatherResponse) {
+    init(service: NetworkRouterProtocol, weather: WeatherResponse? = nil) {
         self.service = service
         self.weather = weather
     }
     
     func fetchForecast() {
-        service.fetchForecast(city: weather.name ?? "") { [weak self] result in
+        service.fetchForecast(city: weather?.name ?? "") { [weak self] result in
             switch result {
             case .success(let success):
                 let filtered = success.list.filter { item in
@@ -49,4 +54,18 @@ final class DetailViewModel: DetailViewModelProtocol {
         }
     }
     
+    func fetchWeatherByLocation() {
+        guard let lat = latitude,
+              let lon = longitude else { return }
+        service.fetchWeatherByLocation(lat: lat, lon: lon) { [weak self] result in
+            switch result {
+            case .success(let success):
+                self?.weather = success
+                self?.fetchForecast()
+                self?.delegate?.didFetchForecast()
+            case .failure(let error):
+                self?.delegate?.showError(message: error.localizedDescription)
+            }
+        }
+    }
 }

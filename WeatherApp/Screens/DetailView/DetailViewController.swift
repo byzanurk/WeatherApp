@@ -29,9 +29,17 @@ final class DetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         viewModel.delegate = self
-        viewModel.fetchForecast()
+        fetchWeatherData()
         setupUI()
         setupCollectionView()
+    }
+    
+    private func fetchWeatherData() {
+        if viewModel.latitude != nil && viewModel.longitude != nil {
+            viewModel.fetchWeatherByLocation()
+        } else {
+            viewModel.fetchForecast()
+        }
     }
     
     private func setupCollectionView() {
@@ -46,17 +54,17 @@ final class DetailViewController: UIViewController {
     
     private func setupUI() {
         let weather = viewModel.weather
-        cityNameLabel.text = weather.name
-        tempLabel.text = "\(Int(weather.main?.temp ?? 0))°C"
-        feelsLikeLabel.text = "Feels like: \(Int(weather.main?.feelsLike ?? 0))°C"
-        rainLabel.text = "☔️ Rain: \(String(format: "%.1f", weather.rain?.oneHour ?? 0)) mm"
-        humidityLabel.text = "💧 Humidity: \(weather.main?.humidity ?? 0)%"
-        speedLabel.text = "🌬 Wind: \(String(format: "%.1f", weather.wind?.speed ?? 0)) m/s"
-        cloudLabel.text = "☁️ Clouds: \(weather.clouds?.all ?? 0)%"
-        sunriseLabel.text = "🌅 Sunrise: \(formatTime(weather.sys?.sunrise))"
-        sunsetLabel.text = "🌇 Sunset: \(formatTime(weather.sys?.sunset))"
+        cityNameLabel.text = weather?.name
+        tempLabel.text = "\(Int(weather?.main?.temp ?? 0))°C"
+        feelsLikeLabel.text = "Feels like: \(Int(weather?.main?.feelsLike ?? 0))°C"
+        rainLabel.text = "☔️ Rain: \(String(format: "%.1f", weather?.rain?.oneHour ?? 0)) mm"
+        humidityLabel.text = "💧 Humidity: \(weather?.main?.humidity ?? 0)%"
+        speedLabel.text = "🌬 Wind: \(String(format: "%.1f", weather?.wind?.speed ?? 0)) m/s"
+        cloudLabel.text = "☁️ Clouds: \(weather?.clouds?.all ?? 0)%"
+        sunriseLabel.text = "🌅 Sunrise: \(formatTime(weather?.sys?.sunrise))"
+        sunsetLabel.text = "🌇 Sunset: \(formatTime(weather?.sys?.sunset))"
         
-        if let iconCode = weather.weather?.first?.icon {
+        if let iconCode = weather?.weather?.first?.icon {
             let urlString = "https://openweathermap.org/img/wn/\(iconCode)@2x.png"
             if let url = URL(string: urlString) {
                 iconImageView.kf.setImage(
@@ -87,10 +95,10 @@ final class DetailViewController: UIViewController {
         return formatter.string(from: date)
     }
     
-    @IBAction func openMapButton(_ sender: Any) {
+    @IBAction private func openMapButton(_ sender: Any) {
         let weather = viewModel.weather
-        guard let lat = weather.coord?.lat,
-              let lon = weather.coord?.lon else {
+        guard let lat = weather?.coord?.lat,
+              let lon = weather?.coord?.lon else {
             debugPrint("Coordinates not available")
             return
         }
@@ -98,7 +106,7 @@ final class DetailViewController: UIViewController {
         let coordinate = CLLocationCoordinate2D(latitude: lat, longitude: lon)
         let location = CLLocation(latitude: lat, longitude: lon)
         let mapItem = MKMapItem(location: location, address: nil)
-        mapItem.name = weather.name
+        mapItem.name = weather?.name
         mapItem.openInMaps(launchOptions: [
             MKLaunchOptionsMapCenterKey: NSValue(mkCoordinate: coordinate),
             MKLaunchOptionsMapSpanKey: NSValue(mkCoordinateSpan: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
@@ -140,6 +148,7 @@ extension DetailViewController: UICollectionViewDelegate, UICollectionViewDataSo
 extension DetailViewController: DetailViewModelOutput {
     func didFetchForecast() {
         DispatchQueue.main.async {
+            self.setupUI()
             self.collectionView.reloadData()
         }
     }

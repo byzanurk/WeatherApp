@@ -10,6 +10,7 @@ import Foundation
 enum WeatherEndpoint {
     case currentWeather(query: String)
     case forecast(query: String)
+    case currentWeatherByCoord(lat: Double, lon: Double)
     
     var path: String {
         switch self {
@@ -17,6 +18,8 @@ enum WeatherEndpoint {
             return "weather"
         case .forecast:
             return "forecast"
+        case .currentWeatherByCoord:
+            return "weather"
         }
     }
     
@@ -26,6 +29,13 @@ enum WeatherEndpoint {
              .forecast(query: let query):
             return [
                 "q": query,
+                "appid": NetworkConfig.apiKey,
+                "units": "metric"
+            ]
+        case .currentWeatherByCoord(lat: let lat, lon: let lon):
+            return [
+                "lat": lat,
+                "lon": lon,
                 "appid": NetworkConfig.apiKey,
                 "units": "metric"
             ]

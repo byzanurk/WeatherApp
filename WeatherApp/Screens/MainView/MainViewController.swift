@@ -6,11 +6,13 @@
 //
 
 import UIKit
+import CoreLocation
 
 final class MainViewController: UIViewController {
     
     var coordinator: CoordinatorProtocol!
     var viewModel: MainViewModelProtocol!
+    private let locationManager = CLLocationManager()
     
     @IBOutlet private weak var searchBar: UISearchBar!
     @IBOutlet private weak var tableView: UITableView!
@@ -34,7 +36,12 @@ final class MainViewController: UIViewController {
         emptyStateView.isHidden = false
         searchBar.placeholder = "Find city..."
     }
-
+    
+    @IBAction private func myLocButton(_ sender: Any) {
+        locationManager.delegate = self
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.requestLocation()
+    }
 }
 
 // MARK: - TableView Delegate & DataSource
@@ -60,7 +67,6 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
 // MARK: - SearchBarDelegate
 extension MainViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        // debounce
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(performSearch), object: nil)
         if searchText.isEmpty {
             viewModel.weatherList.removeAll()
@@ -95,5 +101,21 @@ extension MainViewController: MainViewModelOutput {
     
     func showError(message: String) {
         debugPrint("Error:", message)
+    }
+}
+
+// MARK: - CLLocationManagerDelegate
+extension MainViewController: CLLocationManagerDelegate {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let location = locations.first else { return }
+        let lat = location.coordinate.latitude
+        let lon = location.coordinate.longitude
+        
+        let vc = DetailViewBuilder.buildWithCoord(coordinator: coordinator, lat: lat, lon: lon)
+        navigate(to: vc, coordinator: coordinator)
+    }
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        debugPrint("Location error:", error.localizedDescription)
     }
 }
