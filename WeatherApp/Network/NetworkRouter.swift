@@ -8,7 +8,8 @@
 import Foundation
 
 protocol NetworkRouterProtocol {
-    func searchCitys(query: String, completion: @escaping (Result<WeatherSearchResponse, NetworkError>) -> Void)
+    func searchCitys(query: String, completion: @escaping (Result<WeatherResponse, NetworkError>) -> Void)
+    func fetchForecast(city: String, completion: @escaping (Result<ForecastResponse, NetworkError>) -> Void)
 }
 
 final class NetworkRouter: NetworkRouterProtocol {
@@ -19,17 +20,26 @@ final class NetworkRouter: NetworkRouterProtocol {
         self.service = service
     }
     
-    func searchCitys(query: String, completion: @escaping (Result<WeatherSearchResponse, NetworkError>) -> Void) {
-        let endpoint = WeatherEndpoint.findCities(query: query)
+    func searchCitys(query: String, completion: @escaping (Result<WeatherResponse, NetworkError>) -> Void) {
+        let endpoint = WeatherEndpoint.currentWeather(query: query)
         
         service.request(
             endpoint: endpoint,
-            responseType: WeatherSearchResponse.self,
+            responseType: WeatherResponse.self,
             method: HTTPMethod.get,
             completion: completion
         )
     }
     
+    func fetchForecast(city: String, completion: @escaping (Result<ForecastResponse, NetworkError>) -> Void) {
+        let endpoint = WeatherEndpoint.forecast(query: city)
+        
+        service.request(
+            endpoint: endpoint,
+            responseType: ForecastResponse.self,
+            method: .get,
+            completion: completion
+        )
+    }
     
 }
-// https://api.openweathermap.org/data/2.5/weather?q={city name}&appid={API key}

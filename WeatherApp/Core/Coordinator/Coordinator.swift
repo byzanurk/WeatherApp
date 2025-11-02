@@ -24,6 +24,3 @@ final class Coordinator: CoordinatorProtocol {
     
     
 }
-//let vc = MainViewBuilder.build(coordinator: self)
-//navigationController?.setViewControllers([vc],
-//                                         animated: true)

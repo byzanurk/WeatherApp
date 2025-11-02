@@ -23,7 +23,7 @@ final class MainViewController: UIViewController {
         setupTableView()
         setupUI()
     }
-    
+     
     private func setupTableView() {
         tableView.delegate = self
         tableView.dataSource = self
@@ -49,6 +49,12 @@ extension MainViewController: UITableViewDelegate, UITableViewDataSource {
         cell.configure(with: weather)
         return cell
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let selectedWeather = viewModel.weatherList[indexPath.row]
+        let vc = DetailViewBuilder.build(coordinator: self.coordinator, weather: selectedWeather)
+        navigate(to: vc, coordinator: coordinator)
+    }
 }
 
 // MARK: - SearchBarDelegate
@@ -56,12 +62,19 @@ extension MainViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         // debounce
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(performSearch), object: nil)
+        if searchText.isEmpty {
+            viewModel.weatherList.removeAll()
+            tableView.reloadData()
+            emptyStateView.isHidden = false
+            return
+        }
         perform(#selector(performSearch), with: searchText, afterDelay: 0.5)
     }
     
     @objc private func performSearch(_ query: String) {
-        guard !query.isEmpty else { return }
-        viewModel.searchCity(query: query)
+        let q = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !q.isEmpty else { return }
+        viewModel.searchCity(query: q)
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -82,10 +95,5 @@ extension MainViewController: MainViewModelOutput {
     
     func showError(message: String) {
         debugPrint("Error:", message)
-//        DispatchQueue.main.async {
-//            let alert = UIAlertController(title: "Error", message: message, preferredStyle: .alert)
-//            alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-//            self.present(alert, animated: true)
-//        }
     }
 }

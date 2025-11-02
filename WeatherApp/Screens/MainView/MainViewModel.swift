@@ -32,7 +32,7 @@ final class MainViewModel: MainViewModelProtocol {
         service.searchCitys(query: query) { [weak self] result in
             switch result {
             case .success(let success):
-                self?.weatherList = success.list
+                self?.weatherList = [success]
                 self?.delegate?.didFetchWeather()
             case .failure(let error):
                 self?.delegate?.showError(message: error.localizedDescription)

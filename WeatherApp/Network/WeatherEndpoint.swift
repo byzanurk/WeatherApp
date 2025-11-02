@@ -8,18 +8,22 @@
 import Foundation
 
 enum WeatherEndpoint {
-    case findCities(query: String)
+    case currentWeather(query: String)
+    case forecast(query: String)
     
     var path: String {
         switch self {
-        case .findCities:
-            return "find"
+        case .currentWeather:
+            return "weather"
+        case .forecast:
+            return "forecast"
         }
     }
     
     var parameters: [String: Any] {
         switch self {
-        case .findCities(let query):
+        case .currentWeather(let query),
+             .forecast(query: let query):
             return [
                 "q": query,
                 "appid": NetworkConfig.apiKey,
